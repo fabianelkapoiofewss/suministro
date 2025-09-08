@@ -2,7 +2,57 @@ import { crearEntrada,
         editarEntrada,
         obtenerEntradas
  } from "../services/entrada.service.js";
+import xlsx from "xlsx";
+import { Entrada } from "../models/entrada.js";
 
+export const uploadExcelEntradasController = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No se subió ningún archivo" });
+        }
+
+        const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
+            const sheetName = workbook.SheetNames.find(name => name.toUpperCase() === "ENTRADAS");
+            if (!sheetName) {
+                return res.status(400).json({ error: "El archivo no contiene la hoja ENTRADAS" });
+            }
+
+            const sheet = workbook.Sheets[sheetName];
+            const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+            let count = 0;
+            for (const row of rows) {
+                const codigo = row["CODIGO"] || row["Código"] || row["codigo"];
+                const articulo = row["DESCRIPCION"] || row["Descripción"] || row["descripcion"];
+                let cantidad = row["CANTIDAD"] || row["Cantidad"] || row["cantidad"];
+                let fecha = row["FECHA"] || row["Fecha"] || row["fecha"];
+                if (typeof cantidad === "string") {
+                    const match = cantidad.match(/\d+/);
+                    cantidad = match ? parseInt(match[0], 10) : 0;
+                }
+                if (typeof fecha === "string" && fecha.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+                    const [d, m, y] = fecha.split("/");
+                    fecha = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+                } else if (typeof fecha === "number" && !isNaN(fecha)) {
+                    let days = fecha;
+                    if (days >= 60) days--;
+                    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+                    const dateObj = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+                    fecha = dateObj.toISOString().slice(0, 10);
+                }
+                if (!articulo || !cantidad || !fecha || !codigo) continue;
+                await Entrada.create({
+                    articulo,
+                    cantidad,
+                    fecha,
+                    codigo
+                });
+                count++;
+            }
+            res.json({ message: "Archivo de entradas procesado correctamente", count });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export const crearEntradaController = async (req, res) => {
     try {

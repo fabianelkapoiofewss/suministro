@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CrearArea from '../components/CrearArea';
 
-const API = 'http://localhost:3434/encargados';
+const API = 'http://suministros:3434/encargados';
 
 const EncargadosArea = () => {
+  const navigate = useNavigate();
   const [filteredAreas, setFilteredAreas] = useState([]);
   const [encargados, setEncargados] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -23,7 +25,7 @@ const EncargadosArea = () => {
       .catch(() => setEncargados([]));
   };
   const fetchAreas = () => {
-    fetch('http://localhost:3434/areas')
+    fetch('http://suministros:3434/areas')
       .then(r => r.json())
       .then(setAreas)
       .catch(() => setAreas([]));
@@ -125,6 +127,27 @@ const EncargadosArea = () => {
 
   return (
     <div className="page" style={{ maxWidth: 1300, margin: '0 auto', padding: '32px 0' }}>
+      {/* Flecha para retroceder */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          marginBottom: 16,
+          display: 'flex',
+          alignItems: 'center',
+          fontSize: '1rem',
+          color: '#1976d2',
+          fontWeight: 600
+        }}
+        aria-label="Volver"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: 8 }}>
+          <path d="M15 18L9 12L15 6" stroke="#1976d2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Volver
+      </button>
       <h2 style={{ fontWeight: 700, fontSize: '2rem', marginBottom: 24 }}>Encargados de Área</h2>
       {error && <div style={{ color: 'red', marginBottom: 16 }}>{error}</div>}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: '32px', alignItems: 'flex-start' }}>

@@ -13,7 +13,11 @@ const PORT = process.env.PORT || 3434;
 
 // Middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors(
+    {
+        origin: 'http://suministros:5173',
+    }
+));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

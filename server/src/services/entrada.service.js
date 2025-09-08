@@ -27,7 +27,7 @@ export const crearEntrada = async (data) => {
 
 export const obtenerEntradas = async () => {
     try {
-        const entradas = await Entrada.findAll({ order: [['createdAt', 'DESC']] });
+        const entradas = await Entrada.findAll({ order: [['createdAt', 'ASC']] });
         if (!entradas || entradas.length === 0) {
             throw new Error("No se encontraron entradas");
         }

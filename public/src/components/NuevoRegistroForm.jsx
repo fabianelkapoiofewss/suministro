@@ -5,7 +5,9 @@ const NuevoRegistroForm = ({ onSuccess }) => {
   const [articulo, setArticulo] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [codigo, setCodigo] = useState('');
-  const [fecha, setFecha] = useState('');
+  // Fecha por defecto: hoy
+  const today = new Date().toISOString().slice(0, 10);
+  const [fecha, setFecha] = useState(today);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -16,16 +18,16 @@ const NuevoRegistroForm = ({ onSuccess }) => {
     try {
       // Convertir fecha a formato ISO (YYYY-MM-DDTHH:mm:ss.sssZ)
       const fechaISO = fecha ? new Date(fecha).toISOString() : null;
-      const res = await fetch('http://localhost:3434/entradas', {
+      const res = await fetch('http://suministros:3434/entradas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ articulo, cantidad: Number(cantidad), codigo, fecha: fechaISO })
       });
       if (!res.ok) throw new Error('Error al crear la entrada');
-      setArticulo('');
-      setCantidad('');
-      setCodigo('');
-      setFecha('');
+  setArticulo('');
+  setCantidad('');
+  setCodigo('');
+  setFecha(today);
       if (onSuccess) onSuccess();
     } catch (err) {
       setError(err.message);

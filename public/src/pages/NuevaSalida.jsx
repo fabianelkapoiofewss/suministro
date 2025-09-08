@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-const API = 'http://localhost:3434';
+const API = 'http://suministros:3434';
 
 const NuevaSalida = () => {
   const [inventario, setInventario] = useState([]);
@@ -32,7 +32,7 @@ const NuevaSalida = () => {
     formData.append('file', file);
     setUploading(true);
     try {
-      const res = await fetch('http://localhost:3434/salidas/upload', {
+      const res = await fetch('http://suministros:3434/salidas/upload', {
         method: 'POST',
         body: formData
       });

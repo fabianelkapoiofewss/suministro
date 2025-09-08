@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NuevaSalida from './NuevaSalida';
+import { generarReportePDF } from '../components/reportes';
 
 const SalidasPage = () => {
+  const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   // Formatear fecha a dd-mm-yyyy
@@ -14,7 +17,7 @@ const SalidasPage = () => {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3434/salidas')
+    fetch('http://suministros:3434/salidas')
       .then(r => r.json())
       .then(data => {
         // Ordenar por fecha descendente
@@ -46,10 +49,32 @@ const SalidasPage = () => {
   };
   return (
     <div className="page" style={{ position: 'relative' }}>
+      {/* Flecha para retroceder */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          marginBottom: 16,
+          display: 'flex',
+          alignItems: 'center',
+          fontSize: '1rem',
+          color: '#1976d2',
+          fontWeight: 600
+        }}
+        aria-label="Volver"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: 8 }}>
+          <path d="M15 18L9 12L15 6" stroke="#1976d2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Volver
+      </button>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Salidas</h2>
-        <div>
-          <button className="btn btn-primary" onClick={() => setShowForm(true)} style={{ marginRight: 12 }}>Registrar nueva salida</button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn btn-primary" onClick={() => setShowForm(true)}>Registrar nueva salida</button>
+          <button className="btn btn-success" onClick={() => generarReportePDF(getGroupedSalidas(), selectedMonth, selectedYear)}>Exportar PDF</button>
         </div>
       </div>
 

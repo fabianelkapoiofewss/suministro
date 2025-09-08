@@ -23,7 +23,7 @@ const InventarioPage = () => {
     formData.append('file', file);
     setUploading(true);
     try {
-      const res = await fetch('http://localhost:3434/inventarios/upload', {
+      const res = await fetch('http://suministros:3434/inventarios/upload', {
         method: 'POST',
         body: formData
       });
@@ -31,7 +31,7 @@ const InventarioPage = () => {
       if (!res.ok) throw new Error(data.error || 'Error al subir archivo');
       setUploadMsg('Archivo procesado correctamente.');
       // Recargar inventario
-      fetch('http://localhost:3434/inventarios')
+      fetch('http://suministros:3434/inventarios')
         .then(r => r.json())
         .then(data => {
           setInventario(data);
@@ -46,7 +46,7 @@ const InventarioPage = () => {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3434/inventarios')
+    fetch('http://suministros:3434/inventarios')
       .then(r => r.json())
       .then(data => {
         setInventario(data);
@@ -82,7 +82,7 @@ const InventarioPage = () => {
           {showSearch ? 'Cerrar búsqueda' : 'Buscar'}
         </button>
         <button className="btn btn-warning" onClick={() => navigate('/salidas')}>Salidas</button>
-        <button className="btn btn-info">Solicitudes</button>
+        <button className="btn btn-info" onClick={() => navigate('/entradas')}>Entradas</button>
         <button className="btn btn-success" onClick={() => navigate('/encargados-area')}>
           Encargados de área
         </button>
@@ -102,7 +102,16 @@ const InventarioPage = () => {
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', zIndex: 1000 }} onClick={() => setShowForm(false)}>
           <div style={{ background: '#fff', padding: 32, borderRadius: 8, maxWidth: 500, margin: '60px auto', position: 'relative' }} onClick={e => e.stopPropagation()}>
             <button style={{ position: 'absolute', top: 12, right: 12 }} onClick={() => setShowForm(false)}>✕</button>
-            <NuevoRegistroForm onSuccess={() => setShowForm(false)} />
+            <NuevoRegistroForm onSuccess={() => {
+              setShowForm(false);
+              // Recargar inventario después de crear registro
+              fetch('http://localhost:3434/inventarios')
+                .then(r => r.json())
+                .then(data => {
+                  setInventario(data);
+                  setFiltered(data);
+                });
+            }} />
           </div>
         </div>
       )}
@@ -131,13 +140,19 @@ const InventarioPage = () => {
           {filtered.length === 0 ? (
             <tr><td colSpan={3} style={{ textAlign: 'center', padding: 16 }}>No hay resultados</td></tr>
           ) : (
-            filtered.map(i => (
-              <tr key={i.id}>
-                <td style={{ border: '1px solid #ccc', padding: 8 }}>{i.articulo}</td>
-                <td style={{ border: '1px solid #ccc', padding: 8 }}>{i.codigo}</td>
-                <td style={{ border: '1px solid #ccc', padding: 8 }}>{i.cantidad}</td>
-              </tr>
-            ))
+            filtered.map(i => {
+              let color = '';
+              if (i.cantidad > 50) color = 'green';
+              else if (i.cantidad < 10) color = 'red';
+              else color = 'orange';
+              return (
+                <tr key={i.id}>
+                  <td style={{ border: '1px solid #ccc', padding: 8 }}>{i.articulo}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 8 }}>{i.codigo}</td>
+                  <td style={{ border: '1px solid #ccc', padding: 8, color: color, fontWeight: 'bold' }}>{i.cantidad}</td>
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>

@@ -5,6 +5,7 @@ import { crearInventario,
     obtenerInventarios,
     bulkCrearInventario
 } from "../services/inventario.service.js";
+import { Inventario } from "../models/inventario.js";
 import xlsx from 'xlsx';
 
 export const uploadExcelInventarioController = async (req, res) => {
@@ -108,4 +109,44 @@ export const obtenerInventariosController = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+};
+
+export const importRegistro = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No se envió ningún archivo." });
+    }
+
+    // Leer el archivo Excel subido desde buffer
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheet = workbook.Sheets["REGISTRO"];
+
+    if (!sheet) {
+      return res.status(400).json({ error: "No existe la hoja REGISTRO en el archivo." });
+    }
+
+    const data = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+
+    for (const row of data) {
+      const codigo = row["COD."] || row["COD"];
+      const descripcion = row["DESCRIPCION"];
+
+      if (!codigo || !descripcion) continue;
+
+      const existe = await Inventario.findOne({ where: { codigo } });
+
+      if (!existe) {
+        await Inventario.create({
+          codigo,
+          articulo: descripcion,
+          cantidad: 0,
+        });
+      }
+    }
+
+    res.json({ message: "Importación de REGISTRO completada." });
+  } catch (err) {
+    console.error("Error importando REGISTRO:", err);
+    res.status(500).json({ error: "Error procesando la hoja REGISTRO." });
+  }
 };

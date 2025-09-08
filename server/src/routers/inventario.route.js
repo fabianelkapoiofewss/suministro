@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { crearInventarioController, eliminarInventarioController, obtenerInventarioPorArticuloController, obtenerInventariosController, updateInventario, uploadExcelInventarioController } from "../controllers/inventario.controller.js";
+import { crearInventarioController, eliminarInventarioController, obtenerInventarioPorArticuloController, obtenerInventariosController, updateInventario, uploadExcelInventarioController, importRegistro } from "../controllers/inventario.controller.js";
 
 import multer from 'multer';
 const upload = multer({ storage: multer.memoryStorage() });
@@ -12,5 +12,5 @@ InventarioRoute.delete("/:id", eliminarInventarioController);
 InventarioRoute.get("/:articulo", obtenerInventarioPorArticuloController);
 InventarioRoute.get("/", obtenerInventariosController);
 InventarioRoute.put("/:id", updateInventario);
-
+InventarioRoute.post("/import-registro", upload.single("file"), importRegistro);
 export default InventarioRoute;
