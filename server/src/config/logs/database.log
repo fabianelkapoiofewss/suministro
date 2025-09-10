@@ -10248,3 +10248,146 @@ Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `fecha`, `ar
 Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `fecha`, `area`, `destinatario`, `createdAt`, `updatedAt`, `inventarioId` FROM `salida` AS `salida` ORDER BY `salida`.`fecha` DESC;
 Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `createdAt`, `updatedAt` FROM `inventario` AS `inventario` ORDER BY `inventario`.`articulo` ASC;
 Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `createdAt`, `updatedAt` FROM `inventario` AS `inventario` ORDER BY `inventario`.`articulo` ASC;
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'inventario' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `inventario`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'inventario' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `inventario`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'salida' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `salida`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'salida' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `fecha` `fecha` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `area` `area` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `destinatario` `destinatario` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='salida' AND constraint_name = 'salida_ibfk_1' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `salida` DROP FOREIGN KEY `salida_ibfk_1`;
+Executing (default): ALTER TABLE `salida` ADD FOREIGN KEY (`inventarioId`) REFERENCES `inventario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `salida`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'entrada' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `entrada`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'entrada' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `fecha` `fecha` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='entrada' AND constraint_name = 'entrada_ibfk_1' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `entrada` DROP FOREIGN KEY `entrada_ibfk_1`;
+Executing (default): ALTER TABLE `entrada` ADD FOREIGN KEY (`inventarioId`) REFERENCES `inventario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `entrada`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'areas' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `areas`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'areas' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `nombre` `nombre` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `areas`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'encargados' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `encargados`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'encargados' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `nombre` `nombre` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `encargados`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'area_encargado' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `area_encargado`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'area_encargado' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='area_encargado' AND constraint_name = 'area_encargado_ibfk_155' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `area_encargado` DROP FOREIGN KEY `area_encargado_ibfk_155`;
+Executing (default): ALTER TABLE `area_encargado` ADD FOREIGN KEY (`areaId`) REFERENCES `areas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='area_encargado' AND constraint_name = 'area_encargado_ibfk_156' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `area_encargado` DROP FOREIGN KEY `area_encargado_ibfk_156`;
+Executing (default): ALTER TABLE `area_encargado` ADD FOREIGN KEY (`encargadoId`) REFERENCES `encargados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `area_encargado`
+Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `createdAt`, `updatedAt` FROM `inventario` AS `inventario` ORDER BY `inventario`.`articulo` ASC;
+Executing (default): SELECT `id`, `articulo`, `cantidad`, `codigo`, `createdAt`, `updatedAt` FROM `inventario` AS `inventario` ORDER BY `inventario`.`articulo` ASC;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'inventario' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `inventario`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'inventario' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `inventario` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `inventario`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'salida' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `salida`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'salida' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `fecha` `fecha` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `area` `area` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `destinatario` `destinatario` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `salida` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='salida' AND constraint_name = 'salida_ibfk_1' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `salida` DROP FOREIGN KEY `salida_ibfk_1`;
+Executing (default): ALTER TABLE `salida` ADD FOREIGN KEY (`inventarioId`) REFERENCES `inventario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `salida`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'entrada' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `entrada`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'entrada' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `articulo` `articulo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `cantidad` `cantidad` INTEGER NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `codigo` `codigo` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `fecha` `fecha` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `entrada` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='entrada' AND constraint_name = 'entrada_ibfk_1' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `entrada` DROP FOREIGN KEY `entrada_ibfk_1`;
+Executing (default): ALTER TABLE `entrada` ADD FOREIGN KEY (`inventarioId`) REFERENCES `inventario` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `entrada`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'areas' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `areas`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'areas' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `nombre` `nombre` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `areas` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `areas`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'encargados' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `encargados`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'encargados' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `nombre` `nombre` VARCHAR(255) NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `createdAt` `createdAt` DATETIME NOT NULL;
+Executing (default): ALTER TABLE `encargados` CHANGE `updatedAt` `updatedAt` DATETIME NOT NULL;
+Executing (default): SHOW INDEX FROM `encargados`
+Executing (default): SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'area_encargado' AND TABLE_SCHEMA = 'suministro'
+Executing (default): SHOW FULL COLUMNS FROM `area_encargado`;
+Executing (default): SELECT CONSTRAINT_NAME as constraint_name,CONSTRAINT_NAME as constraintName,CONSTRAINT_SCHEMA as constraintSchema,CONSTRAINT_SCHEMA as constraintCatalog,TABLE_NAME as tableName,TABLE_SCHEMA as tableSchema,TABLE_SCHEMA as tableCatalog,COLUMN_NAME as columnName,REFERENCED_TABLE_SCHEMA as referencedTableSchema,REFERENCED_TABLE_SCHEMA as referencedTableCatalog,REFERENCED_TABLE_NAME as referencedTableName,REFERENCED_COLUMN_NAME as referencedColumnName FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE where TABLE_NAME = 'area_encargado' AND CONSTRAINT_NAME!='PRIMARY' AND CONSTRAINT_SCHEMA='suministro' AND REFERENCED_TABLE_NAME IS NOT NULL;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='area_encargado' AND constraint_name = 'area_encargado_ibfk_157' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `area_encargado` DROP FOREIGN KEY `area_encargado_ibfk_157`;
+Executing (default): ALTER TABLE `area_encargado` ADD FOREIGN KEY (`areaId`) REFERENCES `areas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SELECT CONSTRAINT_CATALOG AS constraintCatalog, CONSTRAINT_NAME AS constraintName, CONSTRAINT_SCHEMA AS constraintSchema, CONSTRAINT_TYPE AS constraintType, TABLE_NAME AS tableName, TABLE_SCHEMA AS tableSchema from INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE table_name='area_encargado' AND constraint_name = 'area_encargado_ibfk_158' AND TABLE_SCHEMA = 'suministro';
+Executing (default): ALTER TABLE `area_encargado` DROP FOREIGN KEY `area_encargado_ibfk_158`;
+Executing (default): ALTER TABLE `area_encargado` ADD FOREIGN KEY (`encargadoId`) REFERENCES `encargados` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+Executing (default): SHOW INDEX FROM `area_encargado`
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `encargados`.`id`, `encargados`.`nombre`, `encargados`.`createdAt`, `encargados`.`updatedAt`, `areas`.`id` AS `areas.id`, `areas`.`nombre` AS `areas.nombre`, `areas`.`createdAt` AS `areas.createdAt`, `areas`.`updatedAt` AS `areas.updatedAt`, `areas->area_encargado`.`id` AS `areas.area_encargado.id`, `areas->area_encargado`.`areaId` AS `areas.area_encargado.areaId`, `areas->area_encargado`.`encargadoId` AS `areas.area_encargado.encargadoId` FROM `encargados` AS `encargados` LEFT OUTER JOIN ( `area_encargado` AS `areas->area_encargado` INNER JOIN `areas` AS `areas` ON `areas`.`id` = `areas->area_encargado`.`areaId`) ON `encargados`.`id` = `areas->area_encargado`.`encargadoId` WHERE `encargados`.`id` = '7';
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados` WHERE `encargados`.`id` = '7';
+Executing (default): DELETE FROM `encargados` WHERE `id` = 7
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `encargados` AS `encargados`;
+Executing (default): SELECT `id`, `nombre`, `createdAt`, `updatedAt` FROM `areas` AS `areas`;
