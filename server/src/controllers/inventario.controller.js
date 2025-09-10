@@ -15,9 +15,9 @@ export const uploadExcelInventarioController = async (req, res) => {
     }
 
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames.find(name => name.toUpperCase() === "DATO");
+    const sheetName = workbook.SheetNames.find(name => name.toUpperCase() === "INVENTARIO");
     if (!sheetName) {
-      return res.status(400).json({ error: 'El archivo no contiene la hoja DATO' });
+      return res.status(400).json({ error: 'El archivo no contiene la hoja INVENTARIO' });
     }
 
     const sheet = workbook.Sheets[sheetName];
@@ -26,15 +26,17 @@ export const uploadExcelInventarioController = async (req, res) => {
     // Mapear columnas del Excel a tu modelo
     const data = rawData.map(row => ({
       articulo: row.DESCRIPCION,
-      cantidad: row.EXISTENCIA,
-      codigo: row.CODIGO
+      codigo: row.CODIGO,
+      entrada: Number(row.ENTRADA) || 0,
+      salida: Number(row.SALIDA) || 0,
+      cantidad: (Number(row.ENTRADA) || 0) - (Number(row.SALIDA) || 0)
     }));
 
     // Filtrar filas vacías o sin datos relevantes
-    const cleanData = data.filter(d => d.articulo && d.codigo && d.cantidad != null);
+    const cleanData = data.filter(d => d.articulo && d.codigo);
 
     if (cleanData.length === 0) {
-      return res.status(400).json({ error: 'No se encontraron registros válidos en la hoja DATO' });
+      return res.status(400).json({ error: 'No se encontraron registros válidos en la hoja INVENTARIO' });
     }
 
     await bulkCrearInventario(cleanData);

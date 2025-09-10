@@ -3,6 +3,13 @@ import { useToast } from '../context/ToastContext.jsx';
 
 const API = 'http://localhost:3434';
 
+const formatLocalDate = (dt = new Date()) => {
+  const yyyy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 const NuevaSalida = () => {
   const [inventario, setInventario] = useState([]);
   const [areas, setAreas] = useState([]);
@@ -14,10 +21,7 @@ const NuevaSalida = () => {
   const [filteredEncargados, setFilteredEncargados] = useState([]);
   const [filteredAreas, setFilteredAreas] = useState([]);
   const [producto, setProducto] = useState(null);
-  const [fecha, setFecha] = useState(() => {
-    const now = new Date();
-    return now.toISOString().slice(0, 10); // yyyy-mm-dd
-  });
+  const [fecha, setFecha] = useState(() => formatLocalDate());
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -161,7 +165,7 @@ const NuevaSalida = () => {
           cantidad: Number(cantidad),
           area: areaId ? areas.find(a => a.id === Number(areaId)).nombre : '',
           destinatario: encargadoId ? encargados.find(e => e.id === Number(encargadoId)).nombre : '',
-          fecha: fecha ? fecha : new Date().toISOString().slice(0, 10),
+          fecha: fecha ? fecha : formatLocalDate(),
           codigo: producto ? producto.codigo : ''
         })
       });

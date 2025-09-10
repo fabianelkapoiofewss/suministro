@@ -21,7 +21,10 @@ export const crearSalida = async (data) => {
             destinatario,
             inventarioId: inventario.id
         });
-        await inventario.update({ cantidad: inventario.cantidad - cantidad });
+        await inventario.update({
+            cantidad: inventario.cantidad - cantidad,
+            salida: inventario.salida + cantidad
+        });
         return nuevaSalida;
     } catch (error) {
         throw new Error("Error al crear la salida: " + error.message);

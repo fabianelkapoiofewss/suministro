@@ -111,27 +111,34 @@ const InventarioPage = () => {
         <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <thead>
             <tr>
-              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '45%', zIndex: 2 }}>Artículo</th>
-              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '25%', zIndex: 2 }}>Código</th>
-              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Cantidad</th>
-              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Editar</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '30%', zIndex: 2 }}>Artículo</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Código</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Entrada</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Salida</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '15%', zIndex: 2 }}>Cantidad actual</th>
+              <th style={{ position: 'sticky', top: 0, background: '#f7f7f7', border: '1px solid #ccc', padding: 8, width: '10%', zIndex: 2 }}>Editar</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={4} style={{ textAlign: 'center', padding: 16 }}>No hay resultados</td></tr>
+              <tr><td colSpan={6} style={{ textAlign: 'center', padding: 16 }}>No hay resultados</td></tr>
             ) : (
               filtered.map(i => {
+                const entrada = i.entrada || 0;
+                const salida = i.salida || 0;
+                const cantidadActual = i.cantidad || 0;
                 let color = '';
-                if (i.cantidad > 50) color = 'green';
-                else if (i.cantidad < 10) color = 'red';
+                if (cantidadActual > 50) color = 'green';
+                else if (cantidadActual < 10) color = 'red';
                 else color = 'orange';
                 return (
                   <tr key={i.id}>
-                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '45%' }}>{i.articulo}</td>
-                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '25%' }}>{i.codigo}</td>
-                    <td style={{ border: '1px solid #e2e2e2', padding: 8, color: color, fontWeight: 'bold', width: '15%' }}>{i.cantidad}</td>
-                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '15%' }}>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '30%' }}>{i.articulo}</td>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '15%' }}>{i.codigo}</td>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '15%' }}>{entrada}</td>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '15%' }}>{salida}</td>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, color: color, fontWeight: 'bold', width: '15%' }}>{cantidadActual}</td>
+                    <td style={{ border: '1px solid #e2e2e2', padding: 8, width: '10%' }}>
                       <button
                         title="Editar"
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}

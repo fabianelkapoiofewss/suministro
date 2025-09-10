@@ -8,9 +8,12 @@ export const crearEntrada = async (data) => {
         let inventario = await Inventario.findOne({ where: { articulo } });
         if (!inventario) {
             // Si no existe, lo crea con la cantidad de la entrada y el código
-            inventario = await Inventario.create({ articulo, cantidad, codigo });
+            inventario = await Inventario.create({ articulo, cantidad, codigo, entrada: cantidad, salida: 0 });
         } else {
-            await inventario.update({ cantidad: inventario.cantidad + cantidad });
+            await inventario.update({
+                cantidad: inventario.cantidad + cantidad,
+                entrada: inventario.entrada + cantidad
+            });
         }
         const nuevaEntrada = await Entrada.create({
             articulo,
