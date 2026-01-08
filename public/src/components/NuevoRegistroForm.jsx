@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useToast } from '../context/ToastContext.jsx';
 
 
 const NuevoRegistroForm = ({ onSuccess }) => {
@@ -10,6 +11,7 @@ const NuevoRegistroForm = ({ onSuccess }) => {
   const [fecha, setFecha] = useState(today);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,30 +25,29 @@ const NuevoRegistroForm = ({ onSuccess }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ articulo, cantidad: Number(cantidad), codigo, fecha: fechaISO })
       });
-      if (!res.ok) throw new Error('Error al crear la entrada');
+  if (!res.ok) { let data=null; try { data=await res.json(); } catch {}; throw new Error(data?.error || 'Error al crear la entrada'); }
   setArticulo('');
   setCantidad('');
   setCodigo('');
   setFecha(today);
       if (onSuccess) onSuccess();
+  showToast('Entrada creada','success');
     } catch (err) {
       setError(err.message);
+  showToast(err.message,'error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form className="nuevo-registro-form" onSubmit={handleSubmit} style={{
-      display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1rem', padding: '8px 0'
-    }}>
+  <form className="nuevo-registro-form" onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:'1rem', marginTop:'.5rem' }}>
       <input
         type="text"
         placeholder="Artículo"
         value={articulo}
         onChange={e => setArticulo(e.target.value)}
         required
-        style={{ padding: '10px', borderRadius: 8, border: '1px solid #ccc', fontSize: '1rem' }}
       />
       <input
         type="number"
@@ -55,7 +56,6 @@ const NuevoRegistroForm = ({ onSuccess }) => {
         onChange={e => setCantidad(e.target.value)}
         required
         min="1"
-        style={{ padding: '10px', borderRadius: 8, border: '1px solid #ccc', fontSize: '1rem' }}
       />
       <input
         type="text"
@@ -63,7 +63,6 @@ const NuevoRegistroForm = ({ onSuccess }) => {
         value={codigo}
         onChange={e => setCodigo(e.target.value)}
         required
-        style={{ padding: '10px', borderRadius: 8, border: '1px solid #ccc', fontSize: '1rem' }}
       />
       <input
         type="date"
@@ -71,13 +70,11 @@ const NuevoRegistroForm = ({ onSuccess }) => {
         value={fecha}
         onChange={e => setFecha(e.target.value)}
         required
-        style={{ padding: '10px', borderRadius: 8, border: '1px solid #ccc', fontSize: '1rem' }}
       />
       <button
-        className="btn btn-primary"
+    className="btn btn-primary btn-block"
         type="submit"
         disabled={loading}
-        style={{ padding: '12px 0', borderRadius: 8, fontWeight: 600, fontSize: '1.1rem', marginTop: '8px' }}
       >
         {loading ? 'Guardando...' : 'Guardar'}
       </button>

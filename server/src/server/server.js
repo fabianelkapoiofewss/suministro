@@ -5,6 +5,9 @@ import helmet from 'helmet';
 import { connectDB } from '../config/connection.js';
 import router from '../routers/index.route.js';
 import { config } from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 config();
 
 const app = express();
@@ -23,8 +26,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Routes API
 app.use(router);
+
 
 // Start server
 export const startServer = async () => {

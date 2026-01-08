@@ -50,3 +50,11 @@ export const getAreasByEncargado = async (encargadoId) => {
     if (!encargado) throw new Error('Encargado no encontrado');
     return encargado.areas;
 };
+
+// Eliminar encargado por id
+export const deleteEncargado = async (id) => {
+    const encargado = await Encargados.findByPk(id);
+    if (!encargado) throw new Error('Encargado no encontrado');
+    await encargado.destroy();
+    return true;
+}

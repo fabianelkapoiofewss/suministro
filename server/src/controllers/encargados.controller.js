@@ -4,8 +4,19 @@ import {
   assignEncargadoToAreas,
   removeEncargadoFromArea,
   getEncargadosByArea,
-  getAreasByEncargado
+  getAreasByEncargado,
+  deleteEncargado
 } from '../services/encargados.service.js';
+// Eliminar encargado por id
+export const deleteEncargadoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await deleteEncargado(id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // Obtener todos los encargados
 export const getAllEncargadosController = async (req, res) => {

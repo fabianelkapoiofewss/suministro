@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NuevaSalida from './NuevaSalida';
 import { generarReportePDF } from '../components/reportes';
+import { useToast } from '../context/ToastContext.jsx';
 
 const SalidasPage = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const SalidasPage = () => {
       .catch(() => setSalidas([]));
   }, [showForm]); // Refresca al cerrar el formulario
 
-  // Filtrar y agrupar salidas por mes, área y destinatario
+  // Filtrar y agrupar salidas por mes y destinatario
   const getGroupedSalidas = () => {
     if (!selectedMonth || !selectedYear) return {};
     // Filtrar por mes/año
@@ -39,7 +40,6 @@ const SalidasPage = () => {
     // Agrupar por área y luego por destinatario
     const grupos = {};
     filtered.forEach(s => {
-      const area = s.area || 'Sin área';
       const destinatario = s.destinatario || 'Sin destinatario';
       
       if (!grupos[area]) grupos[area] = {};
@@ -92,8 +92,8 @@ const SalidasPage = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Salidas</h2>
         <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>Registrar nueva salida</button>
-          <button className="btn btn-success" onClick={() => generarReportePDF(getGroupedSalidas(), selectedMonth, selectedYear)}>Exportar PDF</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>Registrar nueva salida</button>
+          <button className="btn btn-outline btn-sm" onClick={() => generarReportePDF(getGroupedSalidas(), selectedMonth, selectedYear)}>Exportar PDF</button>
         </div>
       </div>
 
@@ -116,6 +116,7 @@ const SalidasPage = () => {
       </div>
 
       {/* Agrupado por destinatario */}
+      {/* Agrupado por destinatario */}
       {selectedMonth && selectedYear ? (
         <div style={{ marginTop: 24 }}>
           {(() => {
@@ -131,6 +132,27 @@ const SalidasPage = () => {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
                 padding: '24px 32px'
               }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1976d2', marginBottom: 12, letterSpacing: 1 }}>{destinatario}</div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', background: 'transparent' }}>
+                  <thead>
+                    <tr style={{ background: '#f0f4f8' }}>
+                      <th style={{ textAlign: 'left', padding: '6px 12px', fontWeight: 600, borderBottom: '1px solid #e0e0e0' }}>Fecha</th>
+                      <th style={{ textAlign: 'left', padding: '6px 12px', fontWeight: 600, borderBottom: '1px solid #e0e0e0' }}>Artículo</th>
+                      <th style={{ textAlign: 'right', padding: '6px 12px', fontWeight: 600, borderBottom: '1px solid #e0e0e0' }}>Cantidad</th>
+                      <th style={{ textAlign: 'left', padding: '6px 12px', fontWeight: 600, borderBottom: '1px solid #e0e0e0' }}>Área</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {grupos[destinatario].map(salida => (
+                      <tr key={salida.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                        <td style={{ padding: '6px 12px', color: '#222' }}>{salida.fecha ? formatFecha(salida.fecha) : ''}</td>
+                        <td style={{ padding: '6px 12px', color: '#222' }}>{salida.articulo}</td>
+                        <td style={{ padding: '6px 12px', textAlign: 'right', color: '#1976d2', fontWeight: 500 }}>{salida.cantidad}</td>
+                        <td style={{ padding: '6px 12px', color: '#444' }}>{salida.area}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1976d2', marginBottom: 12, letterSpacing: 1 }}>{destinatario}</div>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1rem', background: 'transparent' }}>
                   <thead>

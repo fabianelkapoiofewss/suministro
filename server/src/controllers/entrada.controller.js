@@ -7,11 +7,14 @@ import { Entrada } from "../models/entrada.js";
 
 export const uploadExcelEntradasController = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: "No se subió ningún archivo" });
-        }
+            if (!req.file) {
+                return res.status(400).json({ error: "No se subió ningún archivo" });
+            }
 
-        const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
+            // Eliminar todas las entradas existentes
+            await Entrada.destroy({ where: {}, truncate: true });
+
+            const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
             const sheetName = workbook.SheetNames.find(name => name.toUpperCase() === "ENTRADAS");
             if (!sheetName) {
                 return res.status(400).json({ error: "El archivo no contiene la hoja ENTRADAS" });
@@ -33,11 +36,10 @@ export const uploadExcelEntradasController = async (req, res) => {
                     const [d, m, y] = fecha.split("/");
                     fecha = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
                 } else if (typeof fecha === "number" && !isNaN(fecha)) {
-                    let days = fecha;
-                    if (days >= 60) days--;
-                    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
-                    const dateObj = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
-                    fecha = dateObj.toISOString().slice(0, 10);
+                        let days = fecha;
+                        const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+                        const dateObj = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+                        fecha = dateObj.toISOString().slice(0, 10);
                 }
                 if (!articulo || !cantidad || !fecha || !codigo) continue;
                 await Entrada.create({

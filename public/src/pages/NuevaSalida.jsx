@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useToast } from '../context/ToastContext.jsx';
 
 const API = 'http://localhost:3434';
 
@@ -13,34 +14,34 @@ const NuevaSalida = () => {
   const [filteredEncargados, setFilteredEncargados] = useState([]);
   const [filteredAreas, setFilteredAreas] = useState([]);
   const [producto, setProducto] = useState(null);
-  const [fecha, setFecha] = useState(() => {
-    const now = new Date();
-    return now.toISOString().slice(0, 10); // yyyy-mm-dd
-  });
+  const [fecha, setFecha] = useState(() => formatLocalDate());
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadMsg, setUploadMsg] = useState(null);
   const fileInputRef = useRef();
+  const { showToast } = useToast();
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
     setUploadMsg(null);
     const file = fileInputRef.current.files[0];
     if (!file) return setUploadMsg('Selecciona un archivo primero.');
-    const formData = new FormData();
-    formData.append('file', file);
+  const formData = new FormData();
+  formData.append('file', file);
     setUploading(true);
     try {
       const res = await fetch('http://localhost:3434/salidas/upload', {
         method: 'POST',
         body: formData
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Error al subir archivo');
-      setUploadMsg('Archivo procesado correctamente.');
+  let data=null; try { data=await res.json(); } catch {}
+  if (!res.ok) throw new Error(data?.error || 'Error al subir archivo');
+  setUploadMsg('Archivo procesado correctamente.');
+  showToast('Salidas importadas','success');
     } catch (err) {
       setUploadMsg(err.message);
+  showToast(err.message,'error');
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -49,28 +50,31 @@ const NuevaSalida = () => {
 
   // Cargar inventario, áreas y encargados
   useEffect(() => {
-    fetch(`${API}/inventarios`)
-      .then(r => r.json())
-      .then(setInventario)
-      .catch(() => setInventario([]));
-    fetch(`${API}/areas`)
-      .then(r => r.json())
-      .then(setAreas)
-      .catch(() => setAreas([]));
-    fetch(`${API}/encargados`)
-      .then(r => r.json())
-      .then(setEncargados)
-      .catch(() => setEncargados([]));
+    (async () => {
+      try {
+        const r1 = await fetch(`${API}/inventarios`); let d1=null; try { d1=await r1.json(); } catch {};
+        if (!r1.ok) throw new Error(d1?.error || 'Error inventario');
+        setInventario(Array.isArray(d1)? d1: []);
+        const r2 = await fetch(`${API}/areas`); let d2=null; try { d2=await r2.json(); } catch {};
+        if (!r2.ok) throw new Error(d2?.error || 'Error áreas');
+        setAreas(Array.isArray(d2)? d2: []);
+        const r3 = await fetch(`${API}/encargados`); let d3=null; try { d3=await r3.json(); } catch {};
+        if (!r3.ok) throw new Error(d3?.error || 'Error encargados');
+        setEncargados(Array.isArray(d3)? d3: []);
+      } catch (e) {
+        showToast(e.message,'error');
+      }
+    })();
   }, []);
 
 
   // Filtrar encargados por área seleccionada
   useEffect(() => {
     if (areaId) {
-      fetch(`${API}/encargados/area/${areaId}`)
-        .then(r => r.json())
-        .then(setFilteredEncargados)
-        .catch(() => setFilteredEncargados([]));
+      (async () => {
+        try { const r = await fetch(`${API}/encargados/area/${areaId}`); let d=null; try { d=await r.json(); } catch {}; if(!r.ok) throw new Error(d?.error || 'Error encargados área'); setFilteredEncargados(Array.isArray(d)? d: []); }
+        catch(e){ setFilteredEncargados([]); showToast(e.message,'error'); }
+      })();
     } else {
       setFilteredEncargados([]);
     }
@@ -79,10 +83,9 @@ const NuevaSalida = () => {
   // Filtrar áreas por encargado seleccionado
   useEffect(() => {
     if (encargadoId) {
-      fetch(`${API}/encargados/encargado/${encargadoId}`)
-        .then(r => r.json())
-        .then(setFilteredAreas)
-        .catch(() => setFilteredAreas([]));
+      (async () => {
+        try { const r = await fetch(`${API}/encargados/encargado/${encargadoId}`); let d=null; try { d=await r.json(); } catch {}; if(!r.ok) throw new Error(d?.error || 'Error áreas encargado'); setFilteredAreas(Array.isArray(d)? d: []);} catch(e){ setFilteredAreas([]); showToast(e.message,'error'); }
+      })();
     } else {
       setFilteredAreas([]);
     }
@@ -159,15 +162,17 @@ const NuevaSalida = () => {
           codigo: producto ? producto.codigo : ''
         })
       });
-      if (!res.ok) throw new Error('Error al registrar la salida');
+  if (!res.ok) { let data=null; try { data=await res.json(); } catch {}; throw new Error(data?.error || 'Error al registrar la salida'); }
       setProductoId('');
       setCantidad('');
       setAreaId('');
       setEncargadoId('');
   setFecha(new Date().toISOString().slice(0, 10));
       setSuccess('Salida registrada correctamente');
+  showToast('Salida registrada','success');
     } catch (err) {
       setError(err.message);
+  showToast(err.message,'error');
     }
   };
 
@@ -211,7 +216,7 @@ const NuevaSalida = () => {
             Áreas de este encargado: {filteredAreas.map(a => a.nombre).join(', ')}
           </div>
         )}
-        <button className="btn btn-primary" type="submit">Registrar salida</button>
+  <button className="btn btn-primary btn-block" type="submit">Registrar salida</button>
         {error && <div style={{ color: 'red' }}>{error}</div>}
         {success && <div style={{ color: 'green' }}>{success}</div>}
       </form>

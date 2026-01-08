@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 import CrearArea from '../components/CrearArea';
 
 const API = 'http://localhost:3434/encargados';
 
 const EncargadosArea = () => {
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [filteredAreas, setFilteredAreas] = useState([]);
   const [encargados, setEncargados] = useState([]);
@@ -16,6 +18,7 @@ const EncargadosArea = () => {
   const [areasDeEncargado, setAreasDeEncargado] = useState([]);
   const [encargadosDeArea, setEncargadosDeArea] = useState([]);
   const [error, setError] = useState(null);
+  const [modalDelete, setModalDelete] = useState({ open: false, id: null });
 
   // Cargar encargados y áreas
   const fetchEncargados = () => {
@@ -125,6 +128,28 @@ const EncargadosArea = () => {
     }
   };
 
+  // Eliminar encargado completamente con modal centrado
+  const handleDeleteEncargado = (id) => {
+    setModalDelete({ open: true, id });
+  };
+
+  const confirmDeleteEncargado = async () => {
+    const id = modalDelete.id;
+    setError(null);
+    try {
+      const res = await fetch(`${API}/encargado/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Error al eliminar encargado');
+      setEncargados(encargados => encargados.filter(e => e.id !== id));
+      setSelectedEncargado(null);
+      setAreasDeEncargado([]);
+      showToast('Encargado eliminado','success');
+    } catch (err) {
+      setError(err.message);
+      showToast('Error al eliminar encargado','error');
+    }
+    setModalDelete({ open: false, id: null });
+  };
+
   return (
     <div className="page" style={{ maxWidth: 1300, margin: '0 auto', padding: '32px 0' }}>
       {/* Flecha para retroceder */}
@@ -202,8 +227,17 @@ const EncargadosArea = () => {
               <li style={{color: '#888'}}>No hay encargados registrados.</li>
             ) : (
               encargados.map(e => (
-                <li key={e.id} style={{ marginBottom: 10 }}>
-                  <button onClick={() => handleSelectEncargado(e.id)} style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #1976d2', background: selectedEncargado === e.id ? '#1976d2' : '#f0f4f8', color: selectedEncargado === e.id ? '#fff' : '#1976d2', fontWeight: 500, cursor: 'pointer', fontSize: '1rem', width: '100%', textAlign: 'left' }}>{e.nombre}</button>
+                <li key={e.id} style={{ marginBottom: 10, display: 'flex', alignItems: 'center' }}>
+                  <button onClick={() => handleSelectEncargado(e.id)} style={{ flex: 1, padding: '6px 16px', borderRadius: 6, border: '1px solid #1976d2', background: selectedEncargado === e.id ? '#1976d2' : '#f0f4f8', color: selectedEncargado === e.id ? '#fff' : '#1976d2', fontWeight: 500, cursor: 'pointer', fontSize: '1rem', textAlign: 'left' }}>{e.nombre}</button>
+                  <button onClick={() => handleDeleteEncargado(e.id)} title="Eliminar encargado" style={{ marginLeft: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 6h18" stroke="#e57373" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="#e57373" strokeWidth="2" strokeLinecap="round"/>
+                      <rect x="5" y="6" width="14" height="14" rx="2" stroke="#e57373" strokeWidth="2"/>
+                      <path d="M10 11v6" stroke="#e57373" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M14 11v6" stroke="#e57373" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </button>
                 </li>
               ))
             )}
@@ -286,6 +320,19 @@ const EncargadosArea = () => {
           )}
         </div>
       </div>
+    {/* Modal de confirmación para eliminar encargado */}
+    {modalDelete.open && (
+      <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.25)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <div style={{background:'#fff',borderRadius:12,padding:'32px 40px',boxShadow:'0 4px 24px rgba(0,0,0,0.18)',minWidth:320,maxWidth:400,textAlign:'center'}}>
+          <h3 style={{fontWeight:700,fontSize:'1.2rem',marginBottom:16}}>¿Eliminar encargado?</h3>
+          <p style={{marginBottom:24}}>Esta acción no se puede deshacer.<br/>¿Seguro que deseas eliminar este encargado?</p>
+          <div style={{display:'flex',justifyContent:'center',gap:16}}>
+            <button onClick={confirmDeleteEncargado} style={{padding:'10px 24px',borderRadius:8,border:'none',background:'#e57373',color:'#fff',fontWeight:600,fontSize:'1rem',cursor:'pointer'}}>Eliminar</button>
+            <button onClick={()=>setModalDelete({open:false,id:null})} style={{padding:'10px 24px',borderRadius:8,border:'none',background:'#eee',color:'#333',fontWeight:600,fontSize:'1rem',cursor:'pointer'}}>Cancelar</button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 };

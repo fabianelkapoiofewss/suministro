@@ -10,7 +10,7 @@ import NuevaSalida from '../pages/NuevaSalida';
 import NotaPedidoSemanal from '../pages/NotaPedidoSemanal';
 
 const AppRoutes = () => (
-  <Router>
+  <Router basename="/front">
     <Navbar />
     <Routes>
       <Route path="/" element={<InventarioPage />} />

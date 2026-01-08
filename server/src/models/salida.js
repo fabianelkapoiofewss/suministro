@@ -21,7 +21,7 @@ export const Salida = sequelize.define("salida", {
         allowNull: false
     },
     fecha: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false
     },
     area: {
