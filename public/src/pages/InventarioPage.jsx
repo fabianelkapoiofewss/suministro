@@ -64,19 +64,19 @@ const InventarioPage = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-          <h2 style={{ margin: 0, color: '#1976d2' }}>📦 Inventario</h2>
+          <h2 style={{ margin: 0, color: '#1976d2' }}>Inventario</h2>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <button className="btn btn-warning" onClick={() => navigate('/salidas')}>
-              📤 Salidas
+              Salidas
             </button>
             <button className="btn btn-info" onClick={() => navigate('/entradas')}>
-              📥 Entradas
+              Entradas
             </button>
             <button className="btn btn-success" onClick={() => navigate('/encargados-area')}>
-              👥 Encargados
+              Encargados
             </button>
             <button className="btn btn-secondary" onClick={() => navigate('/nota-pedido-semanal')}>
-              📋 Nota Pedido
+              Nota Pedido
             </button>
           </div>
         </div>
@@ -182,7 +182,7 @@ const InventarioPage = () => {
               onChange={e => setSearch(e.target.value)}
               style={{ 
                 padding: '12px 16px', 
-                width: '100%',
+                width: '95%',
                 border: '2px solid #e0e0e0',
                 borderRadius: 8,
                 fontSize: '1rem',
