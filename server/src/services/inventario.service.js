@@ -18,10 +18,7 @@ export const crearInventario = async (data) => {
 export const obtenerInventarios = async () => {
     try {
         const inventarios = await Inventario.findAll({ order: [['articulo', 'ASC']] });
-        if (!inventarios || inventarios.length === 0) {
-            throw new Error("No se encontraron inventarios");
-        }
-        return inventarios;
+        return inventarios || [];
     } catch (error) {
         throw new Error("Error al obtener los inventarios: " + error.message);
     }

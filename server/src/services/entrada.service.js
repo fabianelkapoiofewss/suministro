@@ -31,10 +31,7 @@ export const crearEntrada = async (data) => {
 export const obtenerEntradas = async () => {
     try {
         const entradas = await Entrada.findAll({ order: [['fecha', 'DESC']] });
-        if (!entradas || entradas.length === 0) {
-            throw new Error("No se encontraron entradas");
-        }
-        return entradas;
+        return entradas || [];
     } catch (error) {
         throw new Error("Error al obtener las entradas: " + error.message);
     }

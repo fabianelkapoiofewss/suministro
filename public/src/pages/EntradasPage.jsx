@@ -32,8 +32,9 @@ const EntradasPage = () => {
       fetch(`${API_URL}/entradas`)
         .then(r => r.json())
         .then(data => {
-          setEntradas(data);
-          setFiltered(data);
+          const entradasArray = Array.isArray(data) ? data : [];
+          setEntradas(entradasArray);
+          setFiltered(entradasArray);
         });
     } catch (err) {
       setUploadMsg(err.message);
@@ -47,8 +48,9 @@ const EntradasPage = () => {
     fetch(`${API_URL}/entradas`)
       .then(r => r.json())
       .then(data => {
-        setEntradas(data);
-        setFiltered(data);
+        const entradasArray = Array.isArray(data) ? data : [];
+        setEntradas(entradasArray);
+        setFiltered(entradasArray);
       })
       .catch(() => {
         setEntradas([]);

@@ -34,10 +34,7 @@ export const crearSalida = async (data) => {
 export const obtenerSalidas = async () => {
     try {
         const salidas = await Salida.findAll({ order: [['fecha', 'DESC']] });
-        if (!salidas || salidas.length === 0) {
-            throw new Error("No se encontraron salidas");
-        }
-        return salidas;
+        return salidas || [];
     } catch (error) {
         throw new Error("Error al obtener las salidas: " + error.message);
     }
