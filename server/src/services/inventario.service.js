@@ -15,12 +15,42 @@ export const crearInventario = async (data) => {
 };
 
 
-export const obtenerInventarios = async () => {
+export const obtenerInventarios = async (page = 1, limit = 50) => {
     try {
-        const inventarios = await Inventario.findAll({ order: [['articulo', 'ASC']] });
-        return inventarios || [];
+        const offset = (page - 1) * limit;
+        const { count, rows } = await Inventario.findAndCountAll({ 
+            order: [['articulo', 'ASC']],
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
+        return {
+            inventarios: rows || [],
+            total: count,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            totalPages: Math.ceil(count / limit)
+        };
     } catch (error) {
         throw new Error("Error al obtener los inventarios: " + error.message);
+    }
+};
+
+export const buscarInventarios = async (query) => {
+    try {
+        const { Op } = await import('sequelize');
+        const inventarios = await Inventario.findAll({
+            where: {
+                [Op.or]: [
+                    { articulo: { [Op.like]: `%${query}%` } },
+                    { codigo: { [Op.like]: `%${query}%` } }
+                ]
+            },
+            order: [['articulo', 'ASC']],
+            limit: 100 // Limitar resultados de búsqueda a 100
+        });
+        return inventarios || [];
+    } catch (error) {
+        throw new Error("Error al buscar en inventarios: " + error.message);
     }
 };
 

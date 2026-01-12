@@ -3,6 +3,7 @@ import { crearInventario,
     eliminarInventario, 
     obtenerInventarioPorArticulo, 
     obtenerInventarios,
+    buscarInventarios,
     bulkCrearInventario
 } from "../services/inventario.service.js";
 import { Inventario } from "../models/inventario.js";
@@ -103,10 +104,30 @@ export const obtenerInventarioPorArticuloController = async (req, res) => {
 
 export const obtenerInventariosController = async (req, res) => {
     try {
-        const inventarios = await obtenerInventarios();
-        if (!inventarios || inventarios.length === 0) {
-            return res.status(404).json({ error: "No se encontraron inventarios" });
+        const { page = 1, limit = 50 } = req.query;
+        const resultado = await obtenerInventarios(page, limit);
+        if (!resultado || !resultado.inventarios || resultado.inventarios.length === 0) {
+            return res.status(200).json({
+                inventarios: [],
+                total: 0,
+                page: parseInt(page),
+                limit: parseInt(limit),
+                totalPages: 0
+            });
         }
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const buscarInventariosController = async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.trim().length === 0) {
+            return res.status(400).json({ error: "Se requiere un término de búsqueda" });
+        }
+        const inventarios = await buscarInventarios(q.trim());
         res.status(200).json(inventarios);
     } catch (error) {
         res.status(500).json({ error: error.message });
