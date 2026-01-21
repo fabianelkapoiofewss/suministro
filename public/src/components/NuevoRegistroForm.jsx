@@ -37,13 +37,16 @@ const NuevoRegistroForm = ({ onSuccess }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ articulo, cantidad: Number(cantidad), codigo, fecha: fechaISO })
       });
-  if (!res.ok) { let data=null; try { data=await res.json(); } catch {}; throw new Error(data?.error || 'Error al crear la entrada'); }
-  setArticulo('');
-  setCantidad('');
-  setCodigo('');
-  setFecha(today);
+      if (!res.ok) { let data=null; try { data=await res.json(); } catch {}; throw new Error(data?.error || 'Error al crear la entrada'); }
+      
+      // Limpiar formulario
+      setArticulo('');
+      setCantidad('');
+      setCodigo('');
+      setFecha(today);
+      
       if (onSuccess) onSuccess();
-  showToast('Entrada creada','success');
+      showToast('✓ Entrada registrada. Haz clic en "Actualizar" para ver los cambios.', 'success');
     } catch (err) {
       setError(err.message);
   showToast(err.message,'error');

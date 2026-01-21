@@ -42,6 +42,8 @@ const InventarioPage = () => {
   const [selectedEncargado, setSelectedEncargado] = useState(null);
   const [areaInput, setAreaInput] = useState('');
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
+  const [areasLoaded, setAreasLoaded] = useState(false);
+  const [encargadosLoaded, setEncargadosLoaded] = useState(false);
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
@@ -62,16 +64,28 @@ const InventarioPage = () => {
     }
   };
 
-  // Cargar áreas y encargados para formulario de salida
+  // Cargar áreas y encargados para formulario de salida (solo una vez)
   useEffect(() => {
-    fetch(`${API_URL}/areas`)
-      .then(r => r.json())
-      .then(data => setAreas(Array.isArray(data) ? data : []));
+    if (!areasLoaded) {
+      fetch(`${API_URL}/areas`)
+        .then(r => r.json())
+        .then(data => {
+          setAreas(Array.isArray(data) ? data : []);
+          setAreasLoaded(true);
+        })
+        .catch(() => setAreas([]));
+    }
     
-    fetch(`${API_URL}/encargados`)
-      .then(r => r.json())
-      .then(data => setEncargados(Array.isArray(data) ? data : []));
-  }, []);
+    if (!encargadosLoaded) {
+      fetch(`${API_URL}/encargados`)
+        .then(r => r.json())
+        .then(data => {
+          setEncargados(Array.isArray(data) ? data : []);
+          setEncargadosLoaded(true);
+        })
+        .catch(() => setEncargados([]));
+    }
+  }, [areasLoaded, encargadosLoaded]);
 
   // Filtrar encargados por área seleccionada
   useEffect(() => {
@@ -197,7 +211,10 @@ const InventarioPage = () => {
         })
       });
       if (!res.ok) throw new Error('Error al registrar salida');
-      showToast('Salida registrada correctamente', 'success');
+      
+      showToast('✓ Salida registrada. Haz clic en "Actualizar" para ver los cambios en inventario.', 'success');
+      
+      // Limpiar formulario
       setSalidaForm({
         productoId: '',
         cantidad: '',
@@ -210,7 +227,7 @@ const InventarioPage = () => {
       setSelectedEncargado(null);
       setAreaInput('');
       setShowAreaSuggestions(false);
-      refresh();
+      // No recargar inventario completo, la salida no afecta la vista actual
     } catch (err) {
       showToast(err.message, 'error');
     }
@@ -232,10 +249,10 @@ const InventarioPage = () => {
       return;
     }
 
-    // Esperar 500ms después de que el usuario deje de escribir
+    // Esperar 800ms después de que el usuario deje de escribir para reducir llamadas
     searchTimeoutRef.current = setTimeout(() => {
       searchInventario(search);
-    }, 500);
+    }, 800);
 
     // Cleanup
     return () => {
@@ -385,7 +402,7 @@ const InventarioPage = () => {
                 ➕ Nueva Entrada
               </h3>
               <NuevoRegistroForm onSuccess={() => {
-                refresh();
+                // No recargar todo el inventario, el usuario puede refrescar manualmente si quiere ver el cambio
                 showToast('Entrada registrada correctamente', 'success');
               }} />
 
@@ -607,7 +624,7 @@ const InventarioPage = () => {
           boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
         }}>
           {/* Buscador */}
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20, display: 'flex', gap: 12, alignItems: 'center' }}>
             <input
               type="text"
               placeholder="🔍 Buscar por artículo o código (busca en toda la base de datos)..."
@@ -625,6 +642,25 @@ const InventarioPage = () => {
               onFocus={e => e.target.style.borderColor = '#1976d2'}
               onBlur={e => e.target.style.borderColor = '#e0e0e0'}
             />
+            <button
+              onClick={() => refresh()}
+              disabled={loading}
+              style={{
+                padding: '10px 20px',
+                background: '#1976d2',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                opacity: loading ? 0.6 : 1,
+                whiteSpace: 'nowrap'
+              }}
+              title="Actualizar inventario"
+            >
+              {loading ? '⏳' : '🔄'} Actualizar
+            </button>
             {search && search.trim().length > 0 && (
               <div style={{ 
                 marginTop: 8, 

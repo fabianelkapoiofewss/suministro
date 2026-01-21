@@ -97,7 +97,7 @@ export function useInventario() {
       data = await res.json();
     } catch {}
     if (!res.ok) throw new Error(data?.error || 'Error al subir archivo');
-    await refresh();
+    // Retornar sin refresh automático, el componente puede llamarlo si lo necesita
     return data;
   };
 
