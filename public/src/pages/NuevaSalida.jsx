@@ -18,6 +18,8 @@ const NuevaSalida = () => {
   const [areas, setAreas] = useState([]);
   const [encargados, setEncargados] = useState([]);
   const [areaId, setAreaId] = useState('');
+  const [areaInput, setAreaInput] = useState('');
+  const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
   const [encargadoId, setEncargadoId] = useState('');
   const [productoId, setProductoId] = useState('');
   const [cantidad, setCantidad] = useState('');
@@ -31,6 +33,26 @@ const NuevaSalida = () => {
   const [uploadMsg, setUploadMsg] = useState(null);
   const fileInputRef = useRef();
   const { showToast } = useToast();
+
+  // Sugerencias de áreas basadas en el input
+  const getAreaSuggestions = () => {
+    if (!areaInput) return [];
+    return areas.filter(a => 
+      a.nombre.toLowerCase().includes(areaInput.toLowerCase())
+    ).slice(0, 5);
+  };
+
+  const handleAreaInputChange = (value) => {
+    setAreaInput(value);
+    setAreaId('');
+    setShowAreaSuggestions(true);
+  };
+
+  const selectArea = (area) => {
+    setAreaInput(area.nombre);
+    setAreaId(area.id);
+    setShowAreaSuggestions(false);
+  };
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
@@ -160,13 +182,18 @@ const NuevaSalida = () => {
     setError(null);
     setSuccess(null);
     try {
+      // Si no hay area seleccionada pero hay texto, usar el texto
+      const areaNombre = areaId 
+        ? areas.find(a => a.id === Number(areaId))?.nombre 
+        : areaInput;
+
       const res = await fetch(`${API}/salidas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           articulo: producto ? producto.articulo : '',
           cantidad: Number(cantidad),
-          area: areaId ? areas.find(a => a.id === Number(areaId)).nombre : '',
+          area: areaNombre || '',
           destinatario: encargadoId ? encargados.find(e => e.id === Number(encargadoId)).nombre : '',
           fecha: fecha ? fecha : new Date().toISOString().slice(0, 10),
           codigo: producto ? producto.codigo : ''
@@ -176,8 +203,9 @@ const NuevaSalida = () => {
       setProductoId('');
       setCantidad('');
       setAreaId('');
+      setAreaInput('');
       setEncargadoId('');
-  setFecha(new Date().toISOString().slice(0, 10));
+  setFecha(formatLocalDate());
       setSuccess('Salida registrada correctamente');
   showToast('Salida registrada','success');
     } catch (err) {
@@ -208,12 +236,55 @@ const NuevaSalida = () => {
         />
 
         <label>Área</label>
-        <select value={areaId} onChange={e => setAreaId(e.target.value)}>
-          <option value="">Selecciona un área</option>
-          {getAreaOptions().map(a => (
-            <option key={a.id} value={a.id}>{a.nombre}</option>
-          ))}
-        </select>
+        <div style={{ position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Escribe o selecciona un área..."
+            value={areaInput}
+            onChange={e => handleAreaInputChange(e.target.value)}
+            onFocus={() => setShowAreaSuggestions(true)}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              border: '1px solid #cbd3dd',
+              borderRadius: 4,
+              fontSize: '0.9rem'
+            }}
+          />
+          {showAreaSuggestions && getAreaSuggestions().length > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              background: '#fff',
+              border: '1px solid #cbd3dd',
+              borderTop: 'none',
+              borderRadius: '0 0 4px 4px',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              zIndex: 1000,
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+            }}>
+              {getAreaSuggestions().map(area => (
+                <div
+                  key={area.id}
+                  onClick={() => selectArea(area)}
+                  style={{
+                    padding: '10px 12px',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #f0f0f0',
+                    fontSize: '0.9rem'
+                  }}
+                  onMouseEnter={e => e.target.style.background = '#f8f9fa'}
+                  onMouseLeave={e => e.target.style.background = '#fff'}
+                >
+                  {area.nombre}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <label>Encargado</label>
         <select value={encargadoId} onChange={e => setEncargadoId(e.target.value)}>
           <option value="">Selecciona un encargado</option>

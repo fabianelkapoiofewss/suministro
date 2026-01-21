@@ -40,6 +40,8 @@ const InventarioPage = () => {
   });
   const [selectedProductoSalida, setSelectedProductoSalida] = useState(null);
   const [selectedEncargado, setSelectedEncargado] = useState(null);
+  const [areaInput, setAreaInput] = useState('');
+  const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
 
   const handleFileUpload = async (e) => {
     e.preventDefault();
@@ -111,6 +113,30 @@ const InventarioPage = () => {
     return encargados;
   };
 
+  // Obtener sugerencias de áreas basadas en el input
+  const getAreaSuggestions = () => {
+    if (!areaInput) return [];
+    const filtered = getAreaOptions().filter(area => 
+      area.nombre.toLowerCase().includes(areaInput.toLowerCase())
+    );
+    return filtered.slice(0, 5); // Máximo 5 sugerencias
+  };
+
+  // Manejar cambio en el input de área
+  const handleAreaInputChange = (e) => {
+    const value = e.target.value;
+    setAreaInput(value);
+    setShowAreaSuggestions(value.length > 0);
+  };
+
+  // Seleccionar un área de las sugerencias
+  const selectArea = (area) => {
+    setAreaInput(area.nombre);
+    setSalidaForm({...salidaForm, areaId: area.id, encargadoId: '', encargadoNombre: ''});
+    setSelectedEncargado(null);
+    setShowAreaSuggestions(false);
+  };
+
   // Manejar submit de salida
   const handleSalidaSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +154,9 @@ const InventarioPage = () => {
     }
     
     try {
+      // Usar el texto del input si no hay un área seleccionada
       const area = areas.find(a => a.id === Number(salidaForm.areaId));
+      const areaNombre = area ? area.nombre : areaInput.trim();
       let encargadoNombre = selectedEncargado.nombre;
       let encargadoId = selectedEncargado.id;
 
@@ -163,7 +191,7 @@ const InventarioPage = () => {
           articulo: selectedProductoSalida.articulo,
           codigo: selectedProductoSalida.codigo || 'S/C', // S/C = Sin Código
           cantidad: Number(salidaForm.cantidad),
-          area: area ? area.nombre : '',
+          area: areaNombre,
           destinatario: encargadoNombre,
           fecha: salidaForm.fecha
         })
@@ -180,6 +208,8 @@ const InventarioPage = () => {
       });
       setSelectedProductoSalida(null);
       setSelectedEncargado(null);
+      setAreaInput('');
+      setShowAreaSuggestions(false);
       refresh();
     } catch (err) {
       showToast(err.message, 'error');
@@ -493,22 +523,51 @@ const InventarioPage = () => {
                   />
                 </div>
 
-                <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 16, position: 'relative' }}>
                   <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: '0.9rem' }}>Área *</label>
-                  <select
+                  <input
+                    type="text"
                     required
-                    value={salidaForm.areaId}
-                    onChange={e => {
-                      setSalidaForm({...salidaForm, areaId: e.target.value, encargadoId: '', encargadoNombre: ''});
-                      setSelectedEncargado(null); // Limpiar encargado al cambiar área
-                    }}
-                    style={{ width: '100%', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 6, fontSize: '0.95rem' }}
-                  >
-                    <option value="">Seleccionar área</option>
-                    {getAreaOptions().map(area => (
-                      <option key={area.id} value={area.id}>{area.nombre}</option>
-                    ))}
-                  </select>
+                    value={areaInput}
+                    onChange={handleAreaInputChange}
+                    onFocus={() => areaInput && setShowAreaSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowAreaSuggestions(false), 200)}
+                    placeholder="Escribir o seleccionar área..."
+                    style={{ width: '93%', padding: '8px 12px', border: '1px solid #ccc', borderRadius: 6, fontSize: '0.95rem' }}
+                  />
+                  {showAreaSuggestions && getAreaSuggestions().length > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: '#fff',
+                      border: '1px solid #ccc',
+                      borderRadius: 6,
+                      marginTop: 4,
+                      maxHeight: 200,
+                      overflowY: 'auto',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                      zIndex: 1000
+                    }}>
+                      {getAreaSuggestions().map(area => (
+                        <div
+                          key={area.id}
+                          onMouseDown={() => selectArea(area)}
+                          style={{
+                            padding: '10px 12px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #f0f0f0',
+                            fontSize: '0.95rem'
+                          }}
+                          onMouseEnter={e => e.target.style.background = '#f5f5f5'}
+                          onMouseLeave={e => e.target.style.background = '#fff'}
+                        >
+                          {area.nombre}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: 20 }}>
