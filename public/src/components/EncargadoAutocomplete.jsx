@@ -14,6 +14,16 @@ const EncargadoAutocomplete = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const wrapperRef = useRef(null);
 
+  // Sincronizar con el value externo (para resetear cuando se limpia desde fuera)
+  useEffect(() => {
+    if (value === '' || value === null || value === undefined) {
+      setSearchTerm('');
+      setSuggestions([]);
+    } else if (value && value !== searchTerm) {
+      setSearchTerm(value);
+    }
+  }, [value]);
+
   // Cerrar sugerencias al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event) => {

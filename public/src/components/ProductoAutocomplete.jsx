@@ -17,6 +17,17 @@ const ProductoAutocomplete = ({
   const wrapperRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
+  // Sincronizar con el value externo (para resetear cuando se limpia desde fuera)
+  useEffect(() => {
+    if (value === '' || value === null || value === undefined) {
+      setSearchTerm('');
+      setSelectedProduct(null);
+      setSuggestions([]);
+    } else if (value && value !== searchTerm) {
+      setSearchTerm(value);
+    }
+  }, [value]);
+
   // Cerrar sugerencias al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
