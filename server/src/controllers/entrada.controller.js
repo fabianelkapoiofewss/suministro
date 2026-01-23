@@ -1,6 +1,7 @@
 import { crearEntrada,
         editarEntrada,
-        obtenerEntradas
+        obtenerEntradas,
+        eliminarEntrada
  } from "../services/entrada.service.js";
 import xlsx from "xlsx";
 import { Entrada } from "../models/entrada.js";
@@ -88,7 +89,15 @@ export const editarEntradaController = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
+export const eliminarEntradaController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await eliminarEntrada(id);
+        res.status(200).json(resultado);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export const obtenerEntradasController = async (req, res) => {
     try {

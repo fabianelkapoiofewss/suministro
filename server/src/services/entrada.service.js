@@ -40,24 +40,90 @@ export const obtenerEntradas = async () => {
 
 export const editarEntrada = async (id, data) => {
     try {
-        const inventario = await Inventario.findOne({ where: { articulo: data.articulo } });
-        if (!inventario) {
-            throw new Error("Artículo no encontrado en inventario");
-        }
         const entrada = await Entrada.findByPk(id);
         if (!entrada) {
             throw new Error("Entrada no encontrada");
         }
+
+        const inventario = await Inventario.findOne({ where: { articulo: entrada.articulo } });
+        if (!inventario) {
+            throw new Error("Artículo no encontrado en inventario");
+        }
+
+        // Calcular la diferencia de cantidad
+        const diferenciaCantidad = data.cantidad - entrada.cantidad;
+        
         const { articulo, cantidad, fecha, codigo } = data;
+        
+        // Si cambió el nombre del artículo, actualizar inventario y salidas
+        if (articulo !== entrada.articulo) {
+            await inventario.update({ 
+                articulo: articulo,
+                codigo: codigo,
+                cantidad: inventario.cantidad + diferenciaCantidad,
+                entrada: inventario.entrada + diferenciaCantidad
+            });
+            
+            // Actualizar todas las salidas con el código anterior
+            const { Salida } = await import("../models/salida.js");
+            await Salida.update(
+                { articulo: articulo, codigo: codigo },
+                { where: { codigo: entrada.codigo } }
+            );
+        } else {
+            // Solo ajustar el inventario con la diferencia
+            await inventario.update({ 
+                codigo: codigo,
+                cantidad: inventario.cantidad + diferenciaCantidad,
+                entrada: inventario.entrada + diferenciaCantidad
+            });
+            
+            // Si cambió el código, actualizar salidas
+            if (codigo !== entrada.codigo) {
+                const { Salida } = await import("../models/salida.js");
+                await Salida.update(
+                    { codigo: codigo },
+                    { where: { codigo: entrada.codigo } }
+                );
+            }
+        }
+        
         await entrada.update({
             articulo,
             cantidad,
             fecha,
             codigo
         });
-        await inventario.update({ cantidad: inventario.cantidad + cantidad });
+        
         return entrada;
     } catch (error) {
         throw new Error("Error al editar la entrada: " + error.message);
+    }
+};
+
+export const eliminarEntrada = async (id) => {
+    try {
+        const entrada = await Entrada.findByPk(id);
+        if (!entrada) {
+            throw new Error("Entrada no encontrada");
+        }
+
+        // Buscar el inventario asociado
+        const inventario = await Inventario.findOne({ where: { articulo: entrada.articulo } });
+        
+        if (inventario) {
+            // Restar la cantidad del inventario (devolver la cantidad de la entrada)
+            await inventario.update({
+                cantidad: inventario.cantidad - entrada.cantidad,
+                entrada: inventario.entrada - entrada.cantidad
+            });
+        }
+
+        // Eliminar la entrada
+        await entrada.destroy();
+        
+        return { message: "Entrada eliminada correctamente" };
+    } catch (error) {
+        throw new Error("Error al eliminar la entrada: " + error.message);
     }
 };
