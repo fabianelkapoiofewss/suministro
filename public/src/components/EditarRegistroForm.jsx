@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '../context/ToastContext.jsx';
+import API_URL from '../config/api';
 
 const EditarRegistroForm = ({ registro, onSuccess, onCancel }) => {
   const [articulo, setArticulo] = useState(registro.articulo);

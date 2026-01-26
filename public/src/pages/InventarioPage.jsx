@@ -427,7 +427,7 @@ const InventarioPage = () => {
                     ref={fileInputRef} 
                     disabled={uploading}
                     style={{ 
-                      width: '100%',
+                      width: '95%',
                       marginBottom: 12,
                       padding: 8,
                       border: '1px solid #ccc',

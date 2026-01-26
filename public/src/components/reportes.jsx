@@ -61,30 +61,28 @@ export const generarReportePDF = (salidas, mes, año) => {
       body: rows,
       theme: 'grid', // Usar tema grid para mostrar todas las líneas
       headStyles: {
-        fillColor: [25, 118, 210],
-        textColor: 255,
+        fillColor: [185, 183, 183],
+        textColor: 0,
         fontStyle: 'bold',
         halign: 'left',
         lineWidth: 0.1,
         lineColor: [0, 0, 0]
       },
       styles: {
-        fontSize: 9,
+        fontSize: 7,
         cellPadding: 3,
         lineWidth: 0.1,
         lineColor: [0, 0, 0]
       },
       columnStyles: {
         0: { cellWidth: 40 }, // Destinatario
-        1: { cellWidth: 50 }, // Artículo
+        1: { cellWidth: 45 }, // Artículo
         2: { cellWidth: 25 }, // Código
         3: { cellWidth: 20, halign: 'right' }, // Cantidad
-        4: { cellWidth: 35 }, // Área
-        5: { cellWidth: 25, halign: 'center' } // Fecha
+        4: { cellWidth: 30 }, // Área
+        5: { cellWidth: 20, halign: 'center' } // Fecha
       },
-      alternateRowStyles: {
-        fillColor: [245, 245, 245]
-      }
+
     });
   });
 

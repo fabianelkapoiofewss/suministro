@@ -386,15 +386,6 @@ export default function NotaPedidoSemanal() {
                     }}>
                       Fecha Agregado
                     </th>
-                    <th style={{ 
-                      padding: '12px 16px', 
-                      textAlign: 'center',
-                      fontWeight: 600,
-                      color: '#555',
-                      width: '80px'
-                    }}>
-                      Acción
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
