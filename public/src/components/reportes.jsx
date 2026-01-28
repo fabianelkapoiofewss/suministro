@@ -86,5 +86,5 @@ export const generarReportePDF = (salidas, mes, año) => {
     });
   });
 
-  doc.save(`reporte-salidas-${mes}-${año}.pdf`);
+  doc.save(`salidas-${nombreMes}-${año}.pdf`);
 };
