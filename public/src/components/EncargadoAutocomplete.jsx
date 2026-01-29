@@ -53,7 +53,8 @@ const EncargadoAutocomplete = ({
         );
         setSuggestions(filtered);
       } else {
-        setSuggestions(allEncargados);
+        // Mostrar todos los encargados si no hay búsqueda ni área
+        setSuggestions(allEncargados.slice(0, 10));
       }
       return;
     }
@@ -89,8 +90,18 @@ const EncargadoAutocomplete = ({
     setSearchTerm(newValue);
     setShowSuggestions(true);
     
-    // Siempre permitir texto libre
-    onChange({ id: null, nombre: newValue, isNew: true });
+    // Verificar si el nombre escrito coincide exactamente con un encargado existente
+    const encargadoExistente = allEncargados.find(
+      enc => enc.nombre.toLowerCase().trim() === newValue.toLowerCase().trim()
+    );
+    
+    if (encargadoExistente) {
+      // Si existe, usar ese encargado
+      onChange({ id: encargadoExistente.id, nombre: encargadoExistente.nombre, isNew: false });
+    } else {
+      // Si no existe, marcar como nuevo
+      onChange({ id: null, nombre: newValue, isNew: true });
+    }
   };
 
   const handleFocus = () => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useToast } from '../context/ToastContext.jsx';
 import API_URL from '../config/api';
+import EncargadoAutocomplete from '../components/EncargadoAutocomplete.jsx';
 
 const API = API_URL;
 
@@ -21,6 +22,8 @@ const NuevaSalida = () => {
   const [areaInput, setAreaInput] = useState('');
   const [showAreaSuggestions, setShowAreaSuggestions] = useState(false);
   const [encargadoId, setEncargadoId] = useState('');
+  const [encargadoNombre, setEncargadoNombre] = useState('');
+  const [encargadoIsNew, setEncargadoIsNew] = useState(false);
   const [productoId, setProductoId] = useState('');
   const [cantidad, setCantidad] = useState('');
   const [filteredEncargados, setFilteredEncargados] = useState([]);
@@ -46,6 +49,7 @@ const NuevaSalida = () => {
     setAreaInput(value);
     setAreaId('');
     setShowAreaSuggestions(true);
+    // NO limpiar el encargado cuando se cambia el área
   };
 
   const selectArea = (area) => {
@@ -194,7 +198,10 @@ const NuevaSalida = () => {
           articulo: producto ? producto.articulo : '',
           cantidad: Number(cantidad),
           area: areaNombre || '',
-          destinatario: encargadoId ? encargados.find(e => e.id === Number(encargadoId)).nombre : '',
+          areaId: areaId || null,
+          destinatario: encargadoNombre || '',
+          destinatarioId: encargadoId || null,
+          destinatarioIsNew: encargadoIsNew,
           fecha: fecha ? fecha : new Date().toISOString().slice(0, 10),
           codigo: producto ? producto.codigo : ''
         })
@@ -205,6 +212,8 @@ const NuevaSalida = () => {
       setAreaId('');
       setAreaInput('');
       setEncargadoId('');
+      setEncargadoNombre('');
+      setEncargadoIsNew(false);
   setFecha(formatLocalDate());
       setSuccess('Salida registrada correctamente');
   showToast('Salida registrada','success');
@@ -286,12 +295,17 @@ const NuevaSalida = () => {
           )}
         </div>
         <label>Encargado</label>
-        <select value={encargadoId} onChange={e => setEncargadoId(e.target.value)}>
-          <option value="">Selecciona un encargado</option>
-          {getEncargadoOptions().map(e => (
-            <option key={e.id} value={e.id}>{e.nombre}</option>
-          ))}
-        </select>
+        <EncargadoAutocomplete
+          value={encargadoNombre}
+          onChange={({ id, nombre, isNew }) => {
+            setEncargadoId(id || '');
+            setEncargadoNombre(nombre);
+            setEncargadoIsNew(isNew);
+          }}
+          areaId={areaId}
+          placeholder="Buscar o escribir encargado..."
+          required={false}
+        />
         {encargadoId && filteredAreas.length > 0 && (
           <div style={{ fontSize: '0.9em', color: '#555' }}>
             Áreas de este encargado: {filteredAreas.map(a => a.nombre).join(', ')}

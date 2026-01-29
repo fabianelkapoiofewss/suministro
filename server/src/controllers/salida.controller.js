@@ -11,11 +11,21 @@ import { Salida } from "../models/salida.js";
 
 export const crearSalidaController = async (req, res) => {
     try {
-        const { articulo, cantidad, codigo, area, destinatario, fecha } = req.body;
+        const { articulo, cantidad, codigo, area, areaId, destinatario, destinatarioId, destinatarioIsNew, fecha } = req.body;
         if (!articulo || !cantidad || !area || !destinatario || !fecha) {
             return res.status(400).json({ error: "Faltan datos requeridos" });
         }
-        const nuevaSalida = await crearSalida({ articulo, cantidad, codigo: codigo || 'S/C', area, destinatario, fecha });
+        const nuevaSalida = await crearSalida({ 
+            articulo, 
+            cantidad, 
+            codigo: codigo || 'S/C', 
+            area, 
+            areaId: areaId || null,
+            destinatario, 
+            destinatarioId: destinatarioId || null,
+            destinatarioIsNew: destinatarioIsNew || false,
+            fecha 
+        });
         res.status(201).json(nuevaSalida);
     } catch (error) {
         res.status(500).json({ error: error.message });
